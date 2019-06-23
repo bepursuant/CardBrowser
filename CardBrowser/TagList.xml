@@ -2,11 +2,11 @@
 <TagList>
   <Tag Tag="5A" Description="Primary Account Number (PAN)"/>
   <Tag Tag="92" Description="Issuer Public Key Remainder"/>
-  <Tag Tag="86" Description="Isuer Script Command"/>
+  <Tag Tag="86" Description="Issuer Script Command"/>
   <Tag Tag="9F18" Description="Issuer Script Identifier"/>
   <Tag Tag="71" Description="Issuer Script Template 1"/>
   <Tag Tag="72" Description="Issuer Script Template 2"/>
-  <Tag Tag="5F2D" Description="Language Preference"/>
+  <Tag Tag="5F2D" Description="Language Preference" Encoding="ASCIIHEX"/>
   <Tag Tag="9F13" Description="Last Online ATC Register"/>
   <Tag Tag="9F14" Description="Lower Consecutive Offline Limit (EMV Generic)"/>
   <Tag Tag="9F58" Description="Lower Consecutive Offline Limit (Proprietary)"/>
@@ -21,9 +21,9 @@
   <Tag Tag="4F" Description="Application Identifier"/>
   <Tag Tag="82" Description="Application Interchange Profile"/>
   <Tag Tag="94" Description="Application File Locator (AFL)"/>
-  <Tag Tag="9F76" Description="Secondary Apllication Currency Code"/>
+  <Tag Tag="9F76" Description="Secondary Application Currency Code"/>
   <Tag Tag="5F30" Description="Service Code"/>
-  <Tag Tag="88" Description="Short File Identifier (SFI)"/>
+  <Tag Tag="88" Description="Short File Identifier (SFI)" Encoding="ASCIIHEX"/>
   <Tag Tag="89" Description="Authorisation Code"/>
   <Tag Tag="9F4B" Description="Signed Dynamic Application Data"/>
   <Tag Tag="93" Description="Signed Application Data"/>
@@ -40,11 +40,11 @@
   <Tag Tag="57" Description="Track 2 Equivalent Data"/>
   <Tag Tag="97" Description="Transaction Certificate Data Object List (TDOL)"/>
   <Tag Tag="98" Description="Transaction Certificate (TC) Hash Value"/>
-  <Tag Tag="5F2A" Description="Transaction Currency Code"/>
+  <Tag Tag="5F2A" Description="Transaction Currency Code" Encoding="ASCIIHEX"/>
   <Tag Tag="5F36" Description="Transaction Currency Exponent"/>
   <Tag Tag="9A" Description="Transaction Date"/>
   <Tag Tag="99" Description="Transaction PIN Data"/>
-  <Tag Tag="9F3C" Description="Transaction Reference Currency Code"/>
+  <Tag Tag="9F3C" Description="Transaction Reference Currency Code" Encoding="ASCIIHEX"/>
   <Tag Tag="9F3D" Description="Transaction Reference Currency Exponent"/>
   <Tag Tag="9F41" Description="Transaction Status Counter"/>
   <Tag Tag="9B" Description="Transaction Status Information"/>
@@ -61,7 +61,7 @@
   <Tag Tag="9F03" Description="Amount, Other (Numeric)"/>
   <Tag Tag="9F3A" Description="Amount,Reference Currency"/>
   <Tag Tag="9F26" Description="Application Cryptogram (AC)"/>
-  <Tag Tag="9F42" Description="Application Currency Code"/>
+  <Tag Tag="9F42" Description="Application Currency Code" Encoding="ASCIIHEX"/>
   <Tag Tag="9F44" Description="Application Currency Exponent"/>
   <Tag Tag="9F52" Description="Application Default Action"/>
   <Tag Tag="9F05" Description="Application Discretionary Data"/>
@@ -69,8 +69,8 @@
   <Tag Tag="70" Description="Application Elementary File (AEF) Data Template"/>
   <Tag Tag="5F24" Description="Application Expiration Date"/>
   <Tag Tag="9F06" Description="Application Identifier (AID) (Terminal)"/>
-  <Tag Tag="50" Description="Application Label"/>
-  <Tag Tag="9F12" Description="Application Preferred Name"/>
+  <Tag Tag="50" Description="Application Label" Encoding="ASCIIHEX"/>
+  <Tag Tag="9F12" Description="Application Preferred Name" Encoding="ASCIIHEX"/>
   <Tag Tag="5A" Description="Application Primary Account Number (PAN)"/>
   <Tag Tag="5F34" Description="Application PAN Sequence Number"/>
   <Tag Tag="87" Description="Application Priority Indicator"/>
@@ -85,8 +85,8 @@
   <Tag Tag="9F7F" Description="Card Product Life Cycle History File Identifiers"/>
   <Tag Tag="8C" Description="Card Risk Management Data 1 (CDOL1)"/>
   <Tag Tag="8D" Description="Card Risk Management Data 2 (CDOL2)"/>
-  <Tag Tag="5F20" Description="Cardholder Name"/>
-  <Tag Tag="9F0B" Description="Cardholder Name Extended"/>
+  <Tag Tag="5F20" Description="Cardholder Name" Encoding="ASCIIHEX"/>
+  <Tag Tag="9F0B" Description="Cardholder Name Extended" Encoding="ASCIIHEX"/>
   <Tag Tag="8E" Description="Cardholder Verification Method (CVM) List"/>
   <Tag Tag="9F34" Description="Cardholder Verification Method (CVM) Results"/>
   <Tag Tag="8F" Description="Certification Authority Public Key Index"/>
@@ -98,7 +98,7 @@
   <Tag Tag="9F73" Description="Currency Conversion Factor"/>
   <Tag Tag="9F45" Description="Data Authentication Code"/>
   <Tag Tag="84" Description="Dedicated File (DF) Name"/>
-  <Tag Tag="9D" Description="Directory Definition File (DDF) Name"/>
+  <Tag Tag="9D" Description="Directory Definition File (DDF) Name" Encoding="ASCIIHEX"/>
   <Tag Tag="73" Description="Directory Discretionary Template"/>
   <Tag Tag="9F49" Description="Dynamic Data Authentication Data (DDOL)"/>
   <Tag Tag="BF0C" Description="FCI Discretionary Data"/>
@@ -122,12 +122,12 @@
   <Tag Tag="90" Description="Issuer Public Key Certificate"/>
   <Tag Tag="9F32" Description="Issuer Public Key Exponent"/>
   <Tag Tag="9F4D" Description="Log Entry"/>
-  <Tag Tag="9F4E" Description="Merchant Name and Location"/>
+  <Tag Tag="9F4E" Description="Merchant Name and Location" Encoding="ASCIIHEX"/>
   <Tag Tag="9F4F" Description="Log Format"/>
-  <Tag Tag="5F50" Description="Issuer URL"/>
+  <Tag Tag="5F50" Description="Issuer URL" Encoding="ASCIIHEX"/>
   <Tag Tag="5F53" Description="International Bank Account Number (IBAN)"/>
   <Tag Tag="5F54" Description="Bank Identifier Code (BIC)"/>
-  <Tag Tag="5F55" Description="Issuer Country Code (alpha2 format)"/>
-  <Tag Tag="5F56" Description="Issuer Country Code (alpha3 format) "/>
+  <Tag Tag="5F55" Description="Issuer Country Code (alpha2 format)" Encoding="ASCIIHEX"/>
+  <Tag Tag="5F56" Description="Issuer Country Code (alpha3 format)" Encoding="ASCIIHEX"/>
   <Tag Tag="42" Description="Issuer Identification Number (IIN)"/>
 </TagList>

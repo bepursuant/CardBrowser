@@ -99,9 +99,9 @@
             this.statusStripMain.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.statusStripMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.lblStatus});
-            this.statusStripMain.Location = new System.Drawing.Point(0, 471);
+            this.statusStripMain.Location = new System.Drawing.Point(0, 475);
             this.statusStripMain.Name = "statusStripMain";
-            this.statusStripMain.Size = new System.Drawing.Size(818, 22);
+            this.statusStripMain.Size = new System.Drawing.Size(822, 22);
             this.statusStripMain.SizingGrip = false;
             this.statusStripMain.TabIndex = 14;
             this.statusStripMain.Text = "statusStripMain";
@@ -120,7 +120,7 @@
             this.helpToolStripMenuItem});
             this.menuStripMain.Location = new System.Drawing.Point(0, 0);
             this.menuStripMain.Name = "menuStripMain";
-            this.menuStripMain.Size = new System.Drawing.Size(818, 24);
+            this.menuStripMain.Size = new System.Drawing.Size(822, 24);
             this.menuStripMain.TabIndex = 15;
             this.menuStripMain.Text = "menuStripMain";
             // 
@@ -160,7 +160,7 @@
             this.readCardToolStripMenuItem,
             this.skipPSEToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
-            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
+            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(47, 20);
             this.toolsToolStripMenuItem.Text = "&Tools";
             // 
             // readCardToolStripMenuItem
@@ -202,7 +202,7 @@
             this.toolStripComboBoxReaders});
             this.toolStripMain.Location = new System.Drawing.Point(0, 24);
             this.toolStripMain.Name = "toolStripMain";
-            this.toolStripMain.Size = new System.Drawing.Size(818, 25);
+            this.toolStripMain.Size = new System.Drawing.Size(822, 25);
             this.toolStripMain.TabIndex = 16;
             this.toolStripMain.Text = "toolStrip1";
             // 
@@ -290,7 +290,7 @@
             this.lblTag.AutoSize = true;
             this.lblTag.Location = new System.Drawing.Point(38, 19);
             this.lblTag.Name = "lblTag";
-            this.lblTag.Size = new System.Drawing.Size(40, 15);
+            this.lblTag.Size = new System.Drawing.Size(39, 15);
             this.lblTag.TabIndex = 20;
             this.lblTag.Text = "lblTag";
             // 
@@ -308,7 +308,7 @@
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(8, 89);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(42, 15);
+            this.label3.Size = new System.Drawing.Size(41, 15);
             this.label3.TabIndex = 18;
             this.label3.Text = "Value: ";
             // 
@@ -326,7 +326,7 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(8, 19);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(30, 15);
+            this.label1.Size = new System.Drawing.Size(29, 15);
             this.label1.TabIndex = 16;
             this.label1.Text = "Tag:";
             // 
@@ -354,7 +354,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(818, 493);
+            this.ClientSize = new System.Drawing.Size(822, 497);
             this.Controls.Add(this.groupBoxInformation);
             this.Controls.Add(this.toolStripMain);
             this.Controls.Add(this.statusStripMain);
@@ -365,6 +365,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStripMain;
             this.Name = "MainForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "EMV Card Browser";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Load += new System.EventHandler(this.MainForm_Load);

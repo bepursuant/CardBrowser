@@ -115,45 +115,70 @@ namespace CardBrowser
             }
         }
 
+        private string DecodeAsciiHexTag(string hexValue)
+        {
+            ASCIIEncoding encoding = new ASCIIEncoding();
+
+            byte[] result = new byte[hexValue.Length / 2];
+
+            for (int i = 0; i < hexValue.Length; i += 2)
+            {
+                result[i / 2] = byte.Parse(hexValue.Substring(i, 2), NumberStyles.HexNumber);
+            }
+
+            return encoding.GetString(result);
+        }
+
         private void treeViewData_AfterSelect(object sender, TreeViewEventArgs e)
         {
             TreeNode node = ((TreeView)sender).SelectedNode;
             txtASCII.Text = String.Empty;
             ASN1 asn = node.Tag as ASN1;
 
+            string tag = String.Empty;
+            int len = 0;
+            string value = String.Empty;
+            string description = String.Empty;
+            string ascii = String.Empty;
+
             if (asn != null)
             {
                 StringBuilder sb = new StringBuilder();
-
                 foreach (byte b in asn.Tag)
                 {
                     sb.AppendFormat("{0:X2}", b);
                 }
+                tag = sb.ToString();
+                len = tag.Length;
 
-                // Get tag description
-                XElement tagElement = tagsDocument.Descendants().Where(el => el.Attributes().Any(a => a.Name == "Tag" && a.Value == sb.ToString())).FirstOrDefault();
-
-                lblTag.Text = sb.ToString();
-
-                if (tagElement != null)
-                {
-                    lblDescription.Text = tagElement.Attribute("Description").Value;
-                }
-                else
-                {
-                    lblDescription.Text = "None";
-                }
 
                 sb = new StringBuilder();
-
-                lblLength.Text = asn.Length.ToString();
-
                 foreach (byte b in asn.Value)
                 {
                     sb.AppendFormat("{0:X2}", b);
                 }
+                value = sb.ToString();
 
-                txtData.Text = sb.ToString();
+
+                // Get tag description
+                XElement tagElement = tagsDocument.Descendants().Where(el => el.Attributes().Any(a => a.Name == "Tag" && a.Value == tag)).FirstOrDefault();
+
+                if (tagElement != null)
+                {
+                    description = tagElement.Attribute("Description").Value;
+
+                    if (tagElement.Attribute("Encoding")?.Value == "ASCIIHEX")
+                    {
+                        ascii = DecodeAsciiHexTag(value);
+                    }
+                }
+
+                lblTag.Text = tag;
+                lblLength.Text = len.ToString();
+                txtData.Text = value;
+                lblDescription.Text = description;
+                txtASCII.Text = ascii;
+
             }
             else
             {
@@ -166,16 +191,7 @@ namespace CardBrowser
 
         private void btnASCII_Click(object sender, EventArgs e)
         {
-            ASCIIEncoding encoding = new ASCIIEncoding();
-
-            byte[] result = new byte[txtData.Text.Length / 2];
-
-            for (int i = 0; i < txtData.Text.Length; i += 2)
-            {
-                result[i / 2] = byte.Parse(txtData.Text.Substring(i, 2), NumberStyles.HexNumber);
-            }
-
-            txtASCII.Text = encoding.GetString(result);
+            txtASCII.Text = DecodeAsciiHexTag(txtData.Text);
         }
 
         private void toolStripButtonReadCard_Click(object sender, EventArgs e)
