@@ -25,6 +25,7 @@ namespace CardBrowser
         private PCSCReader cardReader;
         private Thread readThread = null;
         private XDocument tagsDocument = null;
+        private XDocument applicationsDocument = null;
 
         // For cross-thread opertions
         private delegate void UpdateTreeViewDelegate(TreeView treeView);
@@ -39,10 +40,14 @@ namespace CardBrowser
 
             Assembly a = Assembly.GetExecutingAssembly();
             string[] resourceNames = a.GetManifestResourceNames();
-            Stream stream = a.GetManifestResourceStream("CardBrowser.TagList.xml");
 
+            Stream stream = a.GetManifestResourceStream("CardBrowser.TagList.xml");
             XmlTextReader reader = new XmlTextReader(stream);
             tagsDocument = XDocument.Load(reader);
+
+            stream = a.GetManifestResourceStream("CardBrowser.ApplicationList.xml");
+            reader = new XmlTextReader(stream);
+            applicationsDocument = XDocument.Load(reader);
 
             lblTag.Text = String.Empty;
             lblDescription.Text = String.Empty;
@@ -74,24 +79,6 @@ namespace CardBrowser
             }
         }
 
-        void cardReader_CardRemoved(string reader)
-        {
-            UpdateStatusLabel("Card removed from reader: " + reader);
-            ClearTreeView();
-        }
-
-        void cardReader_CardInserted(string reader, byte[] atr)
-        {
-            StringBuilder sb = new StringBuilder();
-
-            foreach (byte b in atr)
-            {
-                sb.AppendFormat("{0:X2}", b);
-            }
-
-            UpdateStatusLabel("Card inserted in reader: " + reader);
-        }
-
         private void AddRecordNodes(ASN1 asn, TreeNode parentNode)
         {
             StringBuilder sb = new StringBuilder();
@@ -100,7 +87,9 @@ namespace CardBrowser
                 sb.AppendFormat("{0:X2}", b);
             }
 
-            TreeNode node = new TreeNode(sb.ToString());
+            XElement tagElement = GetTagElement(sb.ToString());
+
+            TreeNode node = new TreeNode(String.Format("{0} ({1})", sb.ToString(), tagElement?.Attribute("Name")?.Value));
             node.Tag = asn;
             node.ImageIndex = 6;
             node.SelectedImageIndex = 6;
@@ -112,6 +101,153 @@ namespace CardBrowser
                 {
                     AddRecordNodes(a, node);
                 }
+            }
+        }
+
+        private void UseHourglass(bool status)
+        {
+            if (this.InvokeRequired)
+            {
+                this.BeginInvoke(new UpdateHourglassDelegate(UseHourglass), status);
+            }
+            else
+            {
+                this.UseWaitCursor = status;
+                Application.DoEvents();
+            }
+        }
+
+        private void UpdateTreeView(TreeView treeView)
+        {
+            foreach (TreeNode node in treeView.Nodes)
+            {
+                TreeNode clonedNode = (TreeNode)node.Clone();
+                treeViewData.Nodes.Add(clonedNode);
+            }
+        }
+
+        private void ClearTreeView()
+        {
+            if (this.InvokeRequired)
+            {
+                this.BeginInvoke(new ClearTreeViewDelegate(ClearTreeView));
+            }
+            else
+            {
+                treeViewData.Nodes.Clear();
+            }
+        }
+
+        private void UpdateStatusLabel(string status)
+        {
+            if (this.InvokeRequired)
+            {
+                this.BeginInvoke(new UpdateStatusLabelDelegate(UpdateStatusLabel), status);
+            }
+            else
+            {
+                lblStatus.Text = status;
+            }
+        }
+
+        private void BuildDocument(TreeNode treeNode, ref XElement element)
+        {
+            XElement childElement = null;
+            ASN1 tlv = treeNode.Tag as ASN1;
+
+            if (tlv == null)
+            {
+                // Need to special case the non TLV data
+
+                // Use icon as index to type of special case node!
+                switch (treeNode.ImageIndex)
+                {
+                    case 0:
+                        // Card - this is the root node
+                        childElement = element;
+                        break;
+                    case 1:
+                        //Application
+                        byte[] aid = treeNode.Tag as byte[];
+                        StringBuilder sb = new StringBuilder();
+
+                        foreach (byte b in aid)
+                        {
+                            sb.AppendFormat("{0:X2}", b);
+                        }
+
+                        // Get Application Information
+                        XElement applicationElement = GetApplicationElement(sb.ToString());
+
+                        element.Add(childElement = new XElement("application", new XAttribute("aid", sb.ToString()), new XAttribute("name", applicationElement?.Attribute("Name")?.Value)));
+                        break;
+
+                    case 2:
+                        // Elementary File
+                        element.Add(childElement = new XElement("elementaryFile", new XAttribute("sfi", treeNode.Tag.ToString())));
+                        break;
+
+                    case 3:
+                        // File Control Information
+                        // or AIPAFL!
+                        string identifier = treeNode.Tag as string;
+
+                        switch (identifier)
+                        {
+                            case "fci":
+                                element.Add(childElement = new XElement("fileControlInformation"));
+                                break;
+
+                            case "aip":
+                                element.Add(childElement = new XElement("applicationInterchangeProfile"));
+                                break;
+                        }
+
+                        break;
+
+                    case 4:
+                        {
+                            // Record
+                            element.Add(childElement = new XElement("record", new XAttribute("number", treeNode.Tag.ToString())));
+                        }
+                        break;
+
+                    case 5:
+                        {
+                            // SDA Record
+                            element.Add(childElement = new XElement("record", new XAttribute("number", treeNode.Tag.ToString()), new XAttribute("staticDataAuthentication", true)));
+                        }
+                        break;
+                }
+            }
+            else
+            {
+                StringBuilder tag = new StringBuilder();
+                StringBuilder value = new StringBuilder();
+
+                if (tlv != null)
+                {
+                    foreach (byte b in tlv.Tag)
+                    {
+                        tag.AppendFormat("{0:X2}", b);
+                    }
+
+                    foreach (byte b in tlv.Value)
+                    {
+                        value.AppendFormat("{0:X2}", b);
+                    }
+                }
+
+                // Get Tag Details
+                XElement tagElement = GetTagElement(tag.ToString());
+
+                element.Add(childElement = new XElement("tlv", new XAttribute("tag", tag.ToString()), new XAttribute("length", tlv.Length), new XAttribute("value", value.ToString()), new XAttribute("name", tagElement?.Attribute("Name")?.Value)));
+            }
+
+            // Build each node recursively.
+            foreach (TreeNode tn in treeNode.Nodes)
+            {
+                BuildDocument(tn, ref childElement);
             }
         }
 
@@ -129,98 +265,15 @@ namespace CardBrowser
             return encoding.GetString(result);
         }
 
-        private void treeViewData_AfterSelect(object sender, TreeViewEventArgs e)
+        private XElement GetApplicationElement(string aid)
         {
-            TreeNode node = ((TreeView)sender).SelectedNode;
-            txtASCII.Text = String.Empty;
-            ASN1 asn = node.Tag as ASN1;
+            return applicationsDocument.Descendants().Where(el => el.Attributes().Any(a => a.Name == "AID" && a.Value == aid)).FirstOrDefault();
 
-            string tag = String.Empty;
-            int len = 0;
-            string value = String.Empty;
-            string description = String.Empty;
-            string ascii = String.Empty;
-
-            if (asn != null)
-            {
-                StringBuilder sb = new StringBuilder();
-                foreach (byte b in asn.Tag)
-                {
-                    sb.AppendFormat("{0:X2}", b);
-                }
-                tag = sb.ToString();
-                len = tag.Length;
-
-
-                sb = new StringBuilder();
-                foreach (byte b in asn.Value)
-                {
-                    sb.AppendFormat("{0:X2}", b);
-                }
-                value = sb.ToString();
-
-
-                // Get tag description
-                XElement tagElement = tagsDocument.Descendants().Where(el => el.Attributes().Any(a => a.Name == "Tag" && a.Value == tag)).FirstOrDefault();
-
-                if (tagElement != null)
-                {
-                    description = tagElement.Attribute("Description").Value;
-
-                    if (tagElement.Attribute("Encoding")?.Value == "ASCIIHEX")
-                    {
-                        ascii = DecodeAsciiHexTag(value);
-                    }
-                }
-
-                lblTag.Text = tag;
-                lblLength.Text = len.ToString();
-                txtData.Text = value;
-                lblDescription.Text = description;
-                txtASCII.Text = ascii;
-
-            }
-            else
-            {
-                lblTag.Text = String.Empty;
-                lblDescription.Text = String.Empty;
-                lblLength.Text = String.Empty;
-                txtData.Text = String.Empty;
-            }
         }
 
-        private void btnASCII_Click(object sender, EventArgs e)
+        private XElement GetTagElement(string tag)
         {
-            txtASCII.Text = DecodeAsciiHexTag(txtData.Text);
-        }
-
-        private void toolStripButtonReadCard_Click(object sender, EventArgs e)
-        {
-            ClearTreeView();
-            readThread = new Thread(ReadCard);
-            readThread.Start(toolStripComboBoxReaders.SelectedItem.ToString());
-        }
-
-        private void toolStripButtonSave_Click(object sender, EventArgs e)
-        {
-            XDocument saveDocument = new XDocument();
-            XElement rootElement = null;
-
-            saveDocument.Add(rootElement = new XElement("card"));
-
-            TreeNodeCollection nodes = treeViewData.Nodes;
-
-            foreach (TreeNode n in nodes)
-            {
-                BuildDocument(n, ref rootElement);
-            }
-
-            SaveFileDialog sfd = new SaveFileDialog();
-
-            if (sfd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            {
-                saveDocument.Save(sfd.FileName);
-            }
+            return tagsDocument.Descendants().Where(el => el.Attributes().Any(a => a.Name == "Tag" && a.Value == tag)).FirstOrDefault();
         }
 
         private void ReadCard(object o)
@@ -276,7 +329,7 @@ namespace CardBrowser
                         {
                             pseFound = true;
 
-                            pseNode = new TreeNode(String.Format("Application {0}", encoding.GetString(pse)));
+                            pseNode = new TreeNode(String.Format("Application {0} (PSE)", encoding.GetString(pse)));
                             pseNode.ImageIndex = 1;
                             pseNode.SelectedImageIndex = 1;
                             pseNode.Tag = pse;
@@ -407,12 +460,16 @@ namespace CardBrowser
 
                         if (response.SW1 == 0x90)
                         {
+
                             foreach (byte b in AID)
                             {
                                 sb.AppendFormat("{0:X2}", b);
                             }
 
-                            TreeNode applicationNode = new TreeNode(String.Format("Application {0}", sb.ToString()));
+                            // Get Application Details
+                            XElement applicationElement = GetApplicationElement(sb.ToString());
+
+                            TreeNode applicationNode = new TreeNode(String.Format("Application {0} ({1})", sb.ToString(), applicationElement?.Attribute("Name")?.Value));
                             applicationNode.ImageIndex = 1;
                             applicationNode.SelectedImageIndex = 1;
                             applicationNode.Tag = AID;
@@ -591,12 +648,102 @@ namespace CardBrowser
             }
         }
 
-        private void UpdateTreeView(TreeView treeView)
+        void cardReader_CardRemoved(string reader)
         {
-            foreach (TreeNode node in treeView.Nodes)
+            UpdateStatusLabel("Card removed from reader: " + reader);
+            ClearTreeView();
+        }
+
+        void cardReader_CardInserted(string reader, byte[] atr)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            foreach (byte b in atr)
             {
-                TreeNode clonedNode = (TreeNode)node.Clone();
-                treeViewData.Nodes.Add(clonedNode);
+                sb.AppendFormat("{0:X2}", b);
+            }
+
+            UpdateStatusLabel("Card inserted in reader: " + reader);
+        }
+
+        private void treeViewData_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            TreeNode node = ((TreeView)sender).SelectedNode;
+            txtASCII.Text = String.Empty;
+            ASN1 asn = node.Tag as ASN1;
+
+            if (asn != null)
+            {
+                StringBuilder sb = new StringBuilder();
+                foreach (byte b in asn.Tag)
+                {
+                    sb.AppendFormat("{0:X2}", b);
+                }
+                lblTag.Text = sb.ToString();
+
+                // Get tag description
+                XElement tagElement = GetTagElement(sb.ToString());
+
+                sb = new StringBuilder();
+                foreach (byte b in asn.Value)
+                {
+                    sb.AppendFormat("{0:X2}", b);
+                }
+                txtData.Text = sb.ToString();
+                lblLength.Text = sb.ToString().Length.ToString();
+
+                lblDescription.Text = tagElement?.Attribute("Name")?.Value;
+
+                if (tagElement?.Attribute("Encoding")?.Value == "ASCIIHEX")
+                {
+                    txtASCII.Text = DecodeAsciiHexTag(sb.ToString());
+                } 
+                else
+                {
+                    txtASCII.Text = "";
+                }
+
+            }
+            else
+            {
+                lblTag.Text = String.Empty;
+                lblDescription.Text = String.Empty;
+                lblLength.Text = String.Empty;
+                txtData.Text = String.Empty;
+            }
+        }
+
+        private void btnASCII_Click(object sender, EventArgs e)
+        {
+            txtASCII.Text = DecodeAsciiHexTag(txtData.Text);
+        }
+
+        private void toolStripButtonReadCard_Click(object sender, EventArgs e)
+        {
+            ClearTreeView();
+            readThread = new Thread(ReadCard);
+            readThread.Start(toolStripComboBoxReaders.SelectedItem.ToString());
+        }
+
+        private void toolStripButtonSave_Click(object sender, EventArgs e)
+        {
+            XDocument saveDocument = new XDocument();
+            XElement rootElement = null;
+
+            saveDocument.Add(rootElement = new XElement("card"));
+
+            TreeNodeCollection nodes = treeViewData.Nodes;
+
+            foreach (TreeNode n in nodes)
+            {
+                BuildDocument(n, ref rootElement);
+            }
+
+            SaveFileDialog sfd = new SaveFileDialog();
+
+            if (sfd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                saveDocument.Save(sfd.FileName);
             }
         }
 
@@ -605,145 +752,6 @@ namespace CardBrowser
             if (readThread != null)
             {
                 readThread.Abort();
-            }
-        }
-
-        private void BuildDocument(TreeNode treeNode, ref XElement element)
-        {
-            XElement childElement = null;
-            ASN1 tlv = treeNode.Tag as ASN1;
-
-            if (tlv == null)
-            {
-                // Need to special case the non TLV data
-
-                // Use icon as index to type of special case node!
-                switch (treeNode.ImageIndex)
-                {
-                    case 0:
-                        // Card - this is the root node
-                        childElement = element;
-                        break;
-                    case 1:
-                        //Application
-                        byte[] aid = treeNode.Tag as byte[];
-                        StringBuilder sb = new StringBuilder();
-
-                        foreach (byte b in aid)
-                        {
-                            sb.AppendFormat("{0:X2}", b);
-                        }
-
-                        element.Add(childElement = new XElement("application", new XAttribute("aid", sb.ToString())));
-                        break;
-
-                    case 2:
-                        // Elementary File
-                        element.Add(childElement = new XElement("elementaryFile", new XAttribute("sfi", treeNode.Tag.ToString())));
-                        break;
-
-                    case 3:
-                        // File Control Information
-                        // or AIPAFL!
-                        string identifier = treeNode.Tag as string;
-
-                        switch (identifier)
-                        {
-                            case "fci":
-                                element.Add(childElement = new XElement("fileControlInformation"));
-                                break;
-
-                            case "aip":
-                                element.Add(childElement = new XElement("applicationInterchangeProfile"));
-                                break;
-                        }
-
-                        break;
-
-                    case 4:
-                        {
-                            // Record
-                            element.Add(childElement = new XElement("record", new XAttribute("number", treeNode.Tag.ToString())));
-                        }
-                        break;
-
-                    case 5:
-                        {
-                            // SDA Record
-                            element.Add(childElement = new XElement("record", new XAttribute("number", treeNode.Tag.ToString()), new XAttribute("staticDataAuthentication", true)));
-                        }
-                        break;
-                }
-            }
-            else
-            {
-                StringBuilder tag = new StringBuilder();
-                StringBuilder value = new StringBuilder();
-
-                if (tlv != null)
-                {
-                    foreach (byte b in tlv.Tag)
-                    {
-                        tag.AppendFormat("{0:X2}", b);
-                    }
-
-                    foreach (byte b in tlv.Value)
-                    {
-                        value.AppendFormat("{0:X2}", b);
-                    }
-                }
-
-                XElement tagElement = tagsDocument.Descendants().Where(el => el.Attributes().Any(a => a.Name == "Tag" && a.Value == tag.ToString())).FirstOrDefault();
-                string description = String.Empty;
-
-                if (tagElement != null)
-                {
-                    description = tagElement.Attribute("Description").Value;
-                }
-
-                element.Add(childElement = new XElement("tlv", new XAttribute("tag", tag.ToString()), new XAttribute("length", tlv.Length), new XAttribute("value", value.ToString()), new XAttribute("description", description)));
-            }
-
-            // Build each node recursively.
-            foreach (TreeNode tn in treeNode.Nodes)
-            {
-                BuildDocument(tn, ref childElement);
-            }
-        }
-
-        private void UpdateStatusLabel(string status)
-        {
-            if (this.InvokeRequired) 
-            {
-                this.BeginInvoke(new UpdateStatusLabelDelegate(UpdateStatusLabel), status);
-            }
-            else 
-            {
-                lblStatus.Text = status; 
-            }
-        }
-
-        private void UseHourglass(bool status)
-        {
-            if (this.InvokeRequired)
-            {
-                this.BeginInvoke(new UpdateHourglassDelegate(UseHourglass), status);
-            }
-            else
-            {
-                this.UseWaitCursor = status;
-                Application.DoEvents();
-            }
-        }
-        private void ClearTreeView()
-        {
-            if (this.InvokeRequired)
-            {
-                this.BeginInvoke(new ClearTreeViewDelegate(ClearTreeView));
-            }
-            else
-            {
-                treeViewData.Nodes.Clear();
             }
         }
 

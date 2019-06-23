@@ -52,7 +52,6 @@
             this.groupBoxInformation = new System.Windows.Forms.GroupBox();
             this.lblDescription = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.btnDecode = new System.Windows.Forms.Button();
             this.lblTag = new System.Windows.Forms.Label();
             this.lblLength = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -61,24 +60,30 @@
             this.txtASCII = new System.Windows.Forms.TextBox();
             this.txtData = new System.Windows.Forms.TextBox();
             this.timerUpdateCheck = new System.Windows.Forms.Timer(this.components);
+            this.mainSplitContainer = new System.Windows.Forms.SplitContainer();
             this.statusStripMain.SuspendLayout();
             this.menuStripMain.SuspendLayout();
             this.toolStripMain.SuspendLayout();
             this.groupBoxInformation.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.mainSplitContainer)).BeginInit();
+            this.mainSplitContainer.Panel1.SuspendLayout();
+            this.mainSplitContainer.Panel2.SuspendLayout();
+            this.mainSplitContainer.SuspendLayout();
             this.SuspendLayout();
             // 
             // treeViewData
             // 
-            this.treeViewData.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.treeViewData.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.treeViewData.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.treeViewData.FullRowSelect = true;
             this.treeViewData.HotTracking = true;
             this.treeViewData.ImageIndex = 0;
             this.treeViewData.ImageList = this.imageListIcons;
-            this.treeViewData.Location = new System.Drawing.Point(0, 52);
+            this.treeViewData.Location = new System.Drawing.Point(0, 0);
             this.treeViewData.Name = "treeViewData";
             this.treeViewData.SelectedImageIndex = 0;
             this.treeViewData.ShowLines = false;
-            this.treeViewData.Size = new System.Drawing.Size(410, 420);
+            this.treeViewData.Size = new System.Drawing.Size(421, 422);
             this.treeViewData.TabIndex = 5;
             this.treeViewData.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeViewData_AfterSelect);
             // 
@@ -97,12 +102,12 @@
             // statusStripMain
             // 
             this.statusStripMain.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.statusStripMain.GripStyle = System.Windows.Forms.ToolStripGripStyle.Visible;
             this.statusStripMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.lblStatus});
-            this.statusStripMain.Location = new System.Drawing.Point(0, 475);
+            this.statusStripMain.Location = new System.Drawing.Point(0, 471);
             this.statusStripMain.Name = "statusStripMain";
-            this.statusStripMain.Size = new System.Drawing.Size(822, 22);
-            this.statusStripMain.SizingGrip = false;
+            this.statusStripMain.Size = new System.Drawing.Size(824, 22);
             this.statusStripMain.TabIndex = 14;
             this.statusStripMain.Text = "statusStripMain";
             // 
@@ -120,7 +125,7 @@
             this.helpToolStripMenuItem});
             this.menuStripMain.Location = new System.Drawing.Point(0, 0);
             this.menuStripMain.Name = "menuStripMain";
-            this.menuStripMain.Size = new System.Drawing.Size(822, 24);
+            this.menuStripMain.Size = new System.Drawing.Size(824, 24);
             this.menuStripMain.TabIndex = 15;
             this.menuStripMain.Text = "menuStripMain";
             // 
@@ -202,7 +207,7 @@
             this.toolStripComboBoxReaders});
             this.toolStripMain.Location = new System.Drawing.Point(0, 24);
             this.toolStripMain.Name = "toolStripMain";
-            this.toolStripMain.Size = new System.Drawing.Size(822, 25);
+            this.toolStripMain.Size = new System.Drawing.Size(824, 25);
             this.toolStripMain.TabIndex = 16;
             this.toolStripMain.Text = "toolStrip1";
             // 
@@ -241,7 +246,6 @@
             // 
             this.groupBoxInformation.Controls.Add(this.lblDescription);
             this.groupBoxInformation.Controls.Add(this.label4);
-            this.groupBoxInformation.Controls.Add(this.btnDecode);
             this.groupBoxInformation.Controls.Add(this.lblTag);
             this.groupBoxInformation.Controls.Add(this.lblLength);
             this.groupBoxInformation.Controls.Add(this.label3);
@@ -249,10 +253,11 @@
             this.groupBoxInformation.Controls.Add(this.label1);
             this.groupBoxInformation.Controls.Add(this.txtASCII);
             this.groupBoxInformation.Controls.Add(this.txtData);
+            this.groupBoxInformation.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBoxInformation.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBoxInformation.Location = new System.Drawing.Point(416, 52);
+            this.groupBoxInformation.Location = new System.Drawing.Point(0, 0);
             this.groupBoxInformation.Name = "groupBoxInformation";
-            this.groupBoxInformation.Size = new System.Drawing.Size(396, 413);
+            this.groupBoxInformation.Size = new System.Drawing.Size(399, 422);
             this.groupBoxInformation.TabIndex = 17;
             this.groupBoxInformation.TabStop = false;
             this.groupBoxInformation.Text = "Information";
@@ -274,16 +279,6 @@
             this.label4.Size = new System.Drawing.Size(70, 15);
             this.label4.TabIndex = 22;
             this.label4.Text = "Description:";
-            // 
-            // btnDecode
-            // 
-            this.btnDecode.Location = new System.Drawing.Point(6, 226);
-            this.btnDecode.Name = "btnDecode";
-            this.btnDecode.Size = new System.Drawing.Size(75, 23);
-            this.btnDecode.TabIndex = 21;
-            this.btnDecode.Text = "Decode";
-            this.btnDecode.UseVisualStyleBackColor = true;
-            this.btnDecode.Click += new System.EventHandler(this.btnASCII_Click);
             // 
             // lblTag
             // 
@@ -332,9 +327,9 @@
             // 
             // txtASCII
             // 
-            this.txtASCII.Location = new System.Drawing.Point(6, 255);
+            this.txtASCII.Location = new System.Drawing.Point(55, 86);
             this.txtASCII.Name = "txtASCII";
-            this.txtASCII.Size = new System.Drawing.Size(384, 23);
+            this.txtASCII.Size = new System.Drawing.Size(335, 23);
             this.txtASCII.TabIndex = 15;
             // 
             // txtData
@@ -350,23 +345,39 @@
             this.timerUpdateCheck.Interval = 1000;
             this.timerUpdateCheck.Tick += new System.EventHandler(this.timerUpdateCheck_Tick);
             // 
+            // mainSplitContainer
+            // 
+            this.mainSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.mainSplitContainer.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
+            this.mainSplitContainer.Location = new System.Drawing.Point(0, 49);
+            this.mainSplitContainer.Name = "mainSplitContainer";
+            // 
+            // mainSplitContainer.Panel1
+            // 
+            this.mainSplitContainer.Panel1.Controls.Add(this.treeViewData);
+            // 
+            // mainSplitContainer.Panel2
+            // 
+            this.mainSplitContainer.Panel2.Controls.Add(this.groupBoxInformation);
+            this.mainSplitContainer.Size = new System.Drawing.Size(824, 422);
+            this.mainSplitContainer.SplitterDistance = 421;
+            this.mainSplitContainer.TabIndex = 18;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(822, 497);
-            this.Controls.Add(this.groupBoxInformation);
+            this.ClientSize = new System.Drawing.Size(824, 493);
+            this.Controls.Add(this.mainSplitContainer);
             this.Controls.Add(this.toolStripMain);
             this.Controls.Add(this.statusStripMain);
             this.Controls.Add(this.menuStripMain);
-            this.Controls.Add(this.treeViewData);
             this.DoubleBuffered = true;
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStripMain;
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "EMV Card Browser";
+            this.Text = "Card Browser";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.statusStripMain.ResumeLayout(false);
@@ -377,6 +388,10 @@
             this.toolStripMain.PerformLayout();
             this.groupBoxInformation.ResumeLayout(false);
             this.groupBoxInformation.PerformLayout();
+            this.mainSplitContainer.Panel1.ResumeLayout(false);
+            this.mainSplitContainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.mainSplitContainer)).EndInit();
+            this.mainSplitContainer.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -401,7 +416,6 @@
         private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem readCardToolStripMenuItem;
         private System.Windows.Forms.GroupBox groupBoxInformation;
-        private System.Windows.Forms.Button btnDecode;
         private System.Windows.Forms.Label lblTag;
         private System.Windows.Forms.Label lblLength;
         private System.Windows.Forms.Label label3;
@@ -415,6 +429,7 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem skipPSEToolStripMenuItem;
+        private System.Windows.Forms.SplitContainer mainSplitContainer;
     }
 }
 
