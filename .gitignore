@@ -1,1 +1,4 @@
 /*.suo
+/.vs
+/CardBrowser/app.config
+/CardBrowser/CardBrowser.csproj.user
